@@ -1,0 +1,16 @@
+#!/bin/sh
+# 
+# Creation : 09/12/2016
+# Object : launch xflux if not already launched
+
+case "$1" in
+	resume) 
+		flux_sid=$(pgrep xflux)
+		if [ ".$flux_id" == "." ]
+		then    # xflux not launched
+		    xflux -l 20 -k 3200 >/dev/null
+		fi
+		;;
+esac
+
+exit 
