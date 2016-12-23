@@ -1,0 +1,148 @@
+
+    +-----------------------+
+    |                       |
+    |       COMMANDES       |
+    |                       |
+    +-----------------------+
+
+########################################## TODO : regroupés les trucs par thèmes ############################
+
+
+## trouver un/des fichiers : find
+## trouver un élement DANS un/des fichiers : grep
+
+#######
+# trouver le plus récent fichier ayant dans son nom "*1638.*"
+find . -name "*1638.*" -type f -printf '%T@ %p\n'  | sort -n | tail -1 | cut -f2- -d" "                                     ==> chemin relatif
+find . -name "*1638.*" -type f -printf '%T@ %p\n'  | sort -n | tail -1 | cut -f2- -d" " | xargs readlink -f                 ==> chemin absolu
+find . -name "*1638.*" -type f -printf '%T@ %p\n'  | sort -n | tail -1 | cut -f2- -d" " | xargs readlink -f | xargs less    ==> ouvre le fichier
+
+find . -type f -printf '%T@ %p\n'  | sort -n | tail -1 | cut -f2- -d" "   
+
+#######
+# a partir d'un/plusieurs fichiers, vérifier leur présence dans des sous-dossiers :
+for i in *.dmp ; do echo "$i ==>"; find ./*/ -name $i ;echo ; done
+
+#######
+# trouver un PID via un nom de processus qui tourne : 
+pgrep <nom>
+
+#######
+# voir la consommation des processus : top
+dans top utiliser maj+o pour choisir une colonne pour le tri. Choisir la lettre puis Entrée (lettre n pour RAM, k pour CPU)
+sinon top -a pour tri par mémoire, -p pour PID, -M pour affichage mémoire en Mega
+
+#######
+# visualiser un fichier :
+less file-name
+
+/ pour recherche en avant
+? pour recherche en arrière
+n next, N previous
+sinon mêmes commandes navigation que Vi: G pour fin de doc, ... 
+( v pour entrer dans vi, h help)
+= sert à afficher le nom du fichier
+
+#######
+# trouver un fichier :
+find <chemin> -name <nom>
+
+#######
+# rechercher une phrase dans tous les fichiers d'un repertoire (ou +)
+grep -r "<phrase>" <chemin1> <chemin2>
+
+####### 
+# en ligne de commandes, raccourcis :
+Ctrl + a – go to the start of the command line
+Ctrl + e – go to the end of the command line
+Ctrl + k – delete from cursor to the end of the command line
+Ctrl + u – delete from cursor to the start of the command line
+Ctrl + w – delete from cursor to start of word (i.e. delete backwards one word)
+Ctrl + y – paste word or text that was cut using one of the deletion shortcuts (such as the one above) after the cursor
+Ctrl + xx – move between start of command line and current cursor position (and back again)
+Alt + b – move backward one word (or go to start of word the cursor is currently on)
+Alt + f – move forward one word (or go to end of word the cursor is currently on)
+Alt + d – delete to end of word starting at cursor (whole word if cursor is at the beginning of word)
+Alt + c – capitalize to end of word starting at cursor (whole word if cursor is at the beginning of word)
+Alt + u – make uppercase from cursor to end of word
+Alt + l – make lowercase from cursor to end of word
+Alt + t – swap current word with previous
+Ctrl + f – move forward one character
+Ctrl + b – move backward one character
+Ctrl + d – delete character under the cursor/ =exit si pas de caractère sous le curseur
+Ctrl + h – delete character before the cursor
+Ctrl + t – swap character under cursor with the previous one
+
+Ctrl + l = clear
+
+#######
+# afficher les 10 dernieres lignes d'un fichier :
+tail fichier
+
+# afficher les 20 "  "  "   ":
+tail -n 20 fichier
+
+# pour les premieres lignes utiliser : head
+
+#######
+# Disk Usage : sommaire des répertoires contenus dans . :
+du -hc --max-depth=1
+
+#######
+# see list of files in tar archive
+tar -vtf file.tar (voir tous fichiers)
+
+# create tar gz
+tar -vczf archive.tar.gz file1 file2
+
+# detar dans autre répertoire :
+tar -xzvf archive.tar.gz -C path
+
+#######
+# commande script
+enregistre tout ce qui est présent sur la console
+taper script : Le script a débuté, le fichier est typescript
+le fichier est créé dans le répertoire courant
+une fois que la/les commandes sont terminés, faire ctrl-D ou exit
+l'enregistrement s'arrete : faire less typescript
+
+#######
+# au lieu d'utiliser ls -R pour faire une liste récursive des doss/fichiers, utiliser tree 
+(voir tree -Csuh pour des détails type ll)
+
+for table in $(cat $fichier | tr '\r' ',' | tr '\n' ' ' )
+
+traiter les fichiers import_data log afin de récupérer les tables/champs en erreur
+grep -hr "^ORA-[3|0].*" import_data_* | sed 'N;s/\n/ /' | sed -r 's/^[^"]+(\"\w+\"\.\"\w+\")([^(]+)([^ ]+)[^\n]+$/\1 \3/g' | sed 's/"\|(\|)//g' | sed 's/ / ==> /'
+			^^^^^^
+			cibles les erreurs commencant     ^^^^^^																			^^^^^^^^				
+			par ORA							remplace le \n en 	^																vire " et ( )	
+											en fin de ligne (une sur deux) 			^^^^^^^^^^^^^^^^^^													
+																					filtre sur table/champ/PK
+																					
+																					
+#######
+# la différence dans un script entre `pwd`et $0
+# le pwd = endroit d'où est lancer le script (absolu)
+# le $0 = 
+[metiadm@vmme1060 ~]$ ./test2.sh
+le pwd : /home/metiadm
+le dollar zero : ./test2.sh
+
+[metiadm@vmme1060 ~]$ cd /
+
+[metiadm@vmme1060 /]$ ./home/metiadm/test2.sh
+le pwd : /
+le dollar zero : ./home/metiadm/test2.sh
+
+#######
+# boucler sur les lignes d'un fichier : plutôt que for 
+for line in $(cat file.txt); do echo "$line"; done 
+# utiliser while : the solution is to use a while loop coupled with the internal read. 
+while read line; do echo "$line"; done <file
+
+#######
+# trouver une section de manuel
+var=`man bash | col -b | grep "^ \+trap " -n | cut -d ':' -f1` ; man bash | less +${var}G
+         ^^^^						^^								 ^^^^
+		 a remplacer				a remplacer						 a remplacer
